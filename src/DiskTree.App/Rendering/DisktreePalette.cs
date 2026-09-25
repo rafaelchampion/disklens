@@ -16,16 +16,16 @@ public static class DisktreePalette
 
     public static (float Hue, float Chroma) CategoryHue(Category category) => category switch
     {
-        Category.Media => (0.095f, 1.0f),         // Warm Amber/Orange (Images, Video, 3D, Audio)
-        Category.Toolchain => (0.785f, 1.0f),     // Violet/Purple (Binaries, Archives, ISOs)
-        Category.Code => (0.385f, 1.0f),          // Vibrant Emerald Green (Source code, scripts, configs)
-        Category.Documents => (0.585f, 0.95f),    // Blue/Azure (PDF, Docs, Sheets)
-        Category.Synced => (0.520f, 0.95f),       // Teal / Cyan (Cloud sync)
-        Category.Git => (0.975f, 1.0f),           // Crimson/Red (.git objects)
-        Category.Cache => (0.135f, 0.95f),        // Gold/Yellow (Caches, build outputs, temp)
-        Category.AgentScratch => (0.025f, 1.0f),  // Coral (AI agent worktrees, sandboxes)
-        Category.Other => (0.640f, 0.50f),        // Slate (Unknown extensions)
-        _ => (0.640f, 0.50f)
+        Category.Code => (0.605f, 1.0f),          // Blue (Source code, scripts, configs)
+        Category.AgentScratch => (0.065f, 1.0f),  // Coral (AI agent worktrees, sandboxes)
+        Category.Toolchain => (0.415f, 1.0f),     // Teal/Green (Binaries, toolchains, build tools)
+        Category.Synced => (0.535f, 1.0f),        // Cyan (Cloud sync)
+        Category.Git => (0.955f, 1.0f),           // Crimson/Rose (.git objects)
+        Category.Media => (0.745f, 1.0f),         // Purple/Violet (Images, Video, 3D, Audio)
+        Category.Cache => (0.125f, 0.95f),        // Gold/Amber (Caches, build outputs, temp)
+        Category.Documents => (0.600f, 0.18f),    // Muted slate-blue (PDF, Docs, Sheets)
+        Category.Other => (0.600f, 0.08f),        // Near-neutral grey (Unknown extensions)
+        _ => (0.600f, 0.08f)
     };
 
     public static Color CategoryFill(Category category, int depth, bool isDark = true)
@@ -36,13 +36,13 @@ public static class DisktreePalette
         float s, l;
         if (isDark)
         {
-            s = 0.52f * chroma;
-            l = 0.26f + (step * 0.025f);
+            s = 0.26f * chroma;
+            l = 0.215f + (step * 0.028f);
         }
         else
         {
-            s = 0.48f * chroma;
-            l = Math.Max(0.25f, 0.78f - (step * 0.035f));
+            s = 0.30f * chroma;
+            l = Math.Max(0.25f, 0.84f - (step * 0.03f));
         }
 
         return HslToRgb(h, s, l);
