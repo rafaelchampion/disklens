@@ -80,8 +80,20 @@
                 <ColumnDefinition Width="360" MaxWidth="500" MinWidth="280" />
             </Grid.ColumnDefinitions>
 
-            <!-- Treemap Mosaic Canvas -->
-            <controls:TreemapCanvasView x:Name="TreemapCanvas" Grid.Column="0" />
+            <!-- Treemap Mosaic Canvas with Top-Edge Scan Progress Bar -->
+            <Grid Grid.Column="0">
+                <controls:TreemapCanvasView x:Name="TreemapCanvas" />
+                <ProgressBar x:Name="ScanProgressBar"
+                             VerticalAlignment="Top"
+                             Height="3"
+                             CornerRadius="0"
+                             Minimum="0"
+                             Maximum="100"
+                             Value="0"
+                             Opacity="0"
+                             IsHitTestVisible="False"
+                             Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+            </Grid>
 
             <!-- Splitter border -->
             <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" />

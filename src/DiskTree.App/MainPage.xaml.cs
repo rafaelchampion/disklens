@@ -14,6 +14,8 @@ namespace DiskTree.App;
 public sealed partial class MainPage : Page
 {
     private readonly MainViewModel _viewModel = new();
+    private bool _wasScanning;
+    private Microsoft.UI.Xaml.Media.Animation.Storyboard? _fadeStoryboard;
 
     public record CandidateDisplay(Candidate Candidate, string BytesText)
     {
@@ -75,14 +77,76 @@ public sealed partial class MainPage : Page
         });
     }
 
+    private void StartProgressBarFadeOut()
+    {
+        _fadeStoryboard?.Stop();
+
+        var anim = new Microsoft.UI.Xaml.Media.Animation.DoubleAnimation
+        {
+            From = ScanProgressBar.Opacity > 0 ? ScanProgressBar.Opacity : 1.0,
+            To = 0.0,
+            Duration = TimeSpan.FromMilliseconds(500),
+            EasingFunction = new Microsoft.UI.Xaml.Media.Animation.CubicEase
+            {
+                EasingMode = Microsoft.UI.Xaml.Media.Animation.EasingMode.EaseOut
+            }
+        };
+
+        _fadeStoryboard = new Microsoft.UI.Xaml.Media.Animation.Storyboard();
+        _fadeStoryboard.Children.Add(anim);
+        Microsoft.UI.Xaml.Media.Animation.Storyboard.SetTarget(anim, ScanProgressBar);
+        Microsoft.UI.Xaml.Media.Animation.Storyboard.SetTargetProperty(anim, "Opacity");
+
+        _fadeStoryboard.Completed += (_, _) =>
+        {
+            ScanProgressBar.Opacity = 0.0;
+            ScanProgressBar.Value = 0.0;
+            _fadeStoryboard = null;
+        };
+
+        _fadeStoryboard.Begin();
+    }
+
     private void UpdateUI()
     {
         // 1. Breadcrumbs
         PathBreadcrumbBar.ItemsSource = _viewModel.BreadcrumbItems;
 
-        // 2. Scan Status
+        // 2. Scan Status & Top-Edge Progress Bar
         StatusMessageText.Text = _viewModel.ScanStatusText;
         ScanProgressRing.IsActive = _viewModel.IsScanning;
+
+        if (_viewModel.IsScanning)
+        {
+            _fadeStoryboard?.Stop();
+            _fadeStoryboard = null;
+            ScanProgressBar.Opacity = 1.0;
+
+            if (_viewModel.Space.HasValue && _viewModel.Space.Value.Used > 0)
+            {
+                ScanProgressBar.IsIndeterminate = false;
+                ScanProgressBar.Value = _viewModel.ScanProgressPercent;
+            }
+            else
+            {
+                ScanProgressBar.IsIndeterminate = true;
+            }
+
+            _wasScanning = true;
+        }
+        else if (_wasScanning)
+        {
+            _wasScanning = false;
+            ScanProgressBar.IsIndeterminate = false;
+            ScanProgressBar.Value = 100;
+
+            StartProgressBarFadeOut();
+        }
+        else if (ScanProgressBar.Opacity > 0 && _fadeStoryboard == null)
+        {
+            ScanProgressBar.Opacity = 0.0;
+            ScanProgressBar.Value = 0.0;
+        }
 
         // 3. Selection
         if (_viewModel.SelectedNode != null)

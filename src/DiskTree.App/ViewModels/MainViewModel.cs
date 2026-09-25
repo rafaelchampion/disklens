@@ -28,6 +28,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private bool _isScanning;
     private string _scanStatusText = "Ready";
     private ulong _scanErrorCount;
+    private double _scanProgressPercent;
     private ScanProgress? _activeScanProgress;
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -187,6 +188,12 @@ public sealed class MainViewModel : INotifyPropertyChanged
         private set => SetField(ref _scanErrorCount, value);
     }
 
+    public double ScanProgressPercent
+    {
+        get => _scanProgressPercent;
+        private set => SetField(ref _scanProgressPercent, value);
+    }
+
     public IReadOnlyList<string> BreadcrumbItems
     {
         get
@@ -205,6 +212,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _activeScanProgress?.Cancel();
 
         IsScanning = true;
+        ScanProgressPercent = 0.0;
         ScannedRoot = Path.GetFullPath(directoryPath);
         ScanStatusText = $"Scanning {ScannedRoot}...";
         ScanErrorCount = 0;
@@ -226,6 +234,12 @@ public sealed class MainViewModel : INotifyPropertyChanged
                 : "";
             ScanStatusText = $"{phase}Scanned {snap.Files:N0} files, {snap.Dirs:N0} dirs ({Rendering.DisktreePalette.FormatBytes(snap.Bytes)})...";
             ScanErrorCount = snap.Errors;
+
+            if (Space.HasValue && Space.Value.Used > 0)
+            {
+                double pct = (double)snap.Bytes / Space.Value.Used * 100.0;
+                ScanProgressPercent = Math.Clamp(pct, 0.0, 99.0);
+            }
         };
         timer.Start();
 
@@ -240,6 +254,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
             var root = await DirectoryScanner.ScanAsync(ScannedRoot, options, progress, cts.Token);
             timer.Stop();
+            ScanProgressPercent = 100.0;
 
             RootNode = root;
             CurrentViewCrumbs = [];

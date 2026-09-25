@@ -1,5 +1,6 @@
 using DiskTree.Core.Classify;
 using DiskTree.Core.Removal;
+using DiskTree.Core.Space;
 using DiskTree.Core.Tree;
 using DiskTree.Core.Treemap;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -128,5 +129,17 @@ public class CoreTests
         Assert.AreEqual(2, plan.Targets.Count); // sub and other
         Assert.AreEqual(1, plan.Covered.Count); // sub\inner is covered by sub
         Assert.AreEqual(0, plan.Blocked.Count);
+    }
+
+    [TestMethod]
+    public void SpaceInfo_UsedCalculationAndProgress()
+    {
+        var space = new SpaceInfo(Total: 1_000_000, Free: 400_000, Available: 400_000);
+        Assert.AreEqual(600_000UL, space.Used);
+        Assert.AreEqual(0.6f, space.UsedFraction, 0.001f);
+
+        ulong scannedBytes = 300_000;
+        double progressPercent = (double)scannedBytes / space.Used * 100.0;
+        Assert.AreEqual(50.0, progressPercent, 0.01);
     }
 }
