@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="DiskTree.App/DiskTree.App.csproj" />
+  <Project Path="DiskTree.Core.Tests/DiskTree.Core.Tests.csproj" />
+  <Project Path="DiskTree.Core/DiskTree.Core.csproj" />
+</Solution>

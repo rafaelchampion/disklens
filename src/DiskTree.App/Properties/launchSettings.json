@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DiskTree.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "DiskTree.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
